@@ -1,0 +1,24 @@
+@*
+* This template displays a form for adding a new login prompt or editing an existing login prompt
+* in the admin UI.
+*@
+
+@(id: Option[Long], loginPromptForm: Form[LoginPromptData])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+@main("Login Prompt") {
+    @helper.form(action = id match {
+        case Some(id) => routes.AdminController.editPost(id)
+        case None => routes.AdminController.addPost()
+    }) {
+        @inputText(loginPromptForm("caption"))
+        @inputText(loginPromptForm("imageUrl"))
+        @CSRF.formField
+        @if(id.isDefined) {
+            <input type="submit" value="Save"/>
+        } else {
+            <input type="submit" value="Add"/>
+        }
+    }
+}

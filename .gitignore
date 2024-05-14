@@ -1,0 +1,19 @@
+# Given list from Interviewer
+logs
+target
+/.bsp
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+
+# Added for Metals LSP
+.metals/
+.bsp/
+.bloop/
+
+# Added for sbt
+project/target/
+project/project/target/

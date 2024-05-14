@@ -1,0 +1,33 @@
+@*
+* This template displays the list of login prompts in the admin UI.
+*@
+
+@(loginPrompts: Seq[LoginPrompt])
+
+@main("LoginPrompts") {
+  <h1>Login Prompts</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>s
+        <th>Caption</th>
+        <th>ImageUrl</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    @for(p <- loginPrompts) {
+      <tr>
+        <td>@p.id</td>
+        <td>@p.caption</td>
+        <td>@p.imageUrl</td>
+        <td><a href="@routes.AdminController.edit(p.id)">Edit</a></td>
+        <td><a href="@routes.AdminController.delete(p.id)">Delete</a></td>
+      </tr>
+    }
+    </tbody>
+  </table>
+
+  <a href="@routes.AdminController.add()">Add</a>
+}

@@ -1,0 +1,24 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                                   controllers.HomeController.index()
+
+# Routes for client JSON API.
+GET     /api/loginPrompts                   controllers.ApiController.getLoginPrompts()
+GET     /api/loginPrompts/random            controllers.ApiController.getRandomLoginPrompt()
+GET     /api/loginPrompts/:id               controllers.ApiController.getLoginPrompt(id: Long)
+GET     /api/loginPrompts/random/:userId    controllers.ApiController.getRandomLoginPromptForUser(userId: Long)
+
+# Routes for web-based admin UI.
+GET     /admin/loginPrompts                 controllers.AdminController.index()
+GET     /admin/loginPrompts/add             controllers.AdminController.add()
+POST    /admin/loginPrompts/add             controllers.AdminController.addPost()
+GET     /admin/loginPrompts/:id             controllers.AdminController.edit(id: Long)
+POST    /admin/loginPrompts/:id             controllers.AdminController.editPost(id: Long)
+GET     /admin/loginPrompts/:id/delete      controllers.AdminController.delete(id: Long)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
