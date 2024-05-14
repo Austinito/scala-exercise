@@ -11,4 +11,4 @@ INSERT INTO LOGIN_PROMPT (CAPTION, IMAGE_URL) VALUES
   ('Check out the proshop!', 'image_proshop.jpg');
 
 --!Downs
-DROP TABLE LoginPrompt;
+DROP TABLE LOGIN_PROMPT;

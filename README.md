@@ -35,3 +35,11 @@ To get you started, we've initialized the database with some sample login prompt
 1. [Play](https://www.playframework.com/) - Web framework ([docs](https://www.playframework.com/documentation/2.8.x/Home))
 2. [Slick](https://scala-slick.org/) - Database access layer ([docs](https://scala-slick.org/doc/3.3.1/))
 3. [H2](https://www.h2database.com) - Java SQL database
+
+## Interview Notes:
+
+Further Improvements:
+
+- Make sure `quietPeriod` is not shared with user.
+    - Create a new model that only shares desired fields.
+

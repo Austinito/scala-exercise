@@ -14,6 +14,7 @@
     }) {
         @inputText(loginPromptForm("caption"))
         @inputText(loginPromptForm("imageUrl"))
+        @inputText(loginPromptForm("quietPeriodSec"))
         @CSRF.formField
         @if(id.isDefined) {
             <input type="submit" value="Save"/>
