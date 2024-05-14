@@ -42,8 +42,11 @@ class ApiController @Inject()(
    * Returns a random login prompt.
    * @return A login prompt, in JSON format.
    */
-  def getRandomLoginPrompt() = Action {
-    NotImplemented
+  def getRandomLoginPrompt() = Action.async {
+    repo.getRandom().map {
+      case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
+      case None => NotFound
+    }
   }
 
   /**

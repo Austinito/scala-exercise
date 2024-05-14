@@ -17,3 +17,6 @@ target
 # Added for sbt
 project/target/
 project/project/target/
+
+# Added to reduce noise
+db/
