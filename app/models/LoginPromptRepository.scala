@@ -55,6 +55,16 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
   }
 
   /**
+   * Fetches a random `LoginPrompt`
+   *
+   * Note: uses SQL `rand()` function, reducing memory usage and enhancing performance.
+   */
+  def getRandom(): Future[Option[LoginPrompt]] = {
+    val randomSort = SimpleFunction.nullary[Double]("rand")
+    db.run(loginPrompts.sortBy(_ => randomSort).take(1).result.headOption)
+  }
+
+  /**
    * Updates the login prompt by id.
    */
   def update(loginPrompt: LoginPrompt): Future[Boolean] = db.run {
