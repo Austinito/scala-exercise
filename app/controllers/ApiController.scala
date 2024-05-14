@@ -6,6 +6,7 @@ import javax.inject.{Inject, Singleton}
 import models.LoginPromptRepository
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
+import services.LoginPromptService
 
 /**
  * This controller handles the JSON API used by client applications to display login prompts.
@@ -13,9 +14,9 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 @Singleton
 class ApiController @Inject()(
                                repo: LoginPromptRepository,
+                               service: LoginPromptService,
                                val cc: ControllerComponents
                              )(implicit ec: ExecutionContext) extends AbstractController(cc) {
-
   /**
    * Returns the list of existing login prompts.
    * @return A list of login prompts, in JSON format.
@@ -54,7 +55,10 @@ class ApiController @Inject()(
    * @param userId The unique user id.
    * @return A login prompt, in JSON format.
    */
-  def getRandomLoginPromptForUser(userId: Long) = Action {
-    NotImplemented
+ def getRandomLoginPromptForUser(userId: Long) = Action.async {
+    service.getEligiblePromptForUser(userId).map {
+      case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
+      case None => NotFound
+    }
   }
 }

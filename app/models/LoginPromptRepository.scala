@@ -61,9 +61,12 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
    *
    * Note: uses SQL `rand()` function, reducing memory usage and enhancing performance.
    */
-  def getRandom(): Future[Option[LoginPrompt]] = {
-    val randomSort = SimpleFunction.nullary[Double]("rand")
-    db.run(loginPrompts.sortBy(_ => randomSort).take(1).result.headOption)
+  def getRandom(): Future[Option[LoginPrompt]] = db.run {
+    loginPrompts
+      .sortBy(_ => SimpleFunction.nullary[Double]("rand"))
+      .take(1)
+      .result
+      .headOption
   }
 
   /**
@@ -72,8 +75,8 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
   def update(loginPrompt: LoginPrompt): Future[Boolean] = db.run {
     loginPrompts
       .filter(_.id === loginPrompt.id)
-      .map(lp => (lp.caption, lp.imageUrl))
-      .update(loginPrompt.caption, loginPrompt.imageUrl)
+      .map(lp => (lp.caption, lp.imageUrl, lp.quietPeriodSec))
+      .update(loginPrompt.caption, loginPrompt.imageUrl, loginPrompt.quietPeriodSec)
   }.map(_ == 1)
 
   /**

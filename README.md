@@ -11,9 +11,11 @@ The web server implements both a JSON-based API (for the mobile client), and a w
 
 
 ## Getting started
+IMPORTANT: Please add `-Duser.timezone=UTC` to your sbt command line! Otherwise, timezone issues may arise between H2 and the server.
+
 1. Unzip the archive:  `tar xzf tgm-scala-exercise.tar.gz`
 2. Change to the project directory: `cd tgm-scala-exercise`
-3. Enter `sbt run` to download dependencies and start the web server.
+3. Enter `sbt -Duser.timezone=UTC run` to download dependencies and start the web server.
 4. Open http://localhost:9000/ in your web browser to see the Admin UI.
 5. If this is the server's first request, you'll see a reddish-orange warning stating `Database 'default' needs evolution!`. Click the button labeled `Apply this script now!`.
 6. At this point, you should see a basic HTML admin page titled `Login Prompts`. You can test the client API by opening http://localhost:9000/api/loginPrompts.
@@ -38,8 +40,33 @@ To get you started, we've initialized the database with some sample login prompt
 
 ## Interview Notes:
 
+IMPORTANT: Please add `-Duser.timezone=UTC` to your sbt command line! Otherwise, timezone issues may arise between H2 and the server.
+
+### Design Decisions:
+
+First Feature:
+
+    We could keep simple randomizing logic of the login prompt within the database (using `rand()`).
+
+    We could discuss whether or not the `NotFound` error should be returned when there are no login prompts.
+
+Second Feature:
+
+    By adding a `quietPeriod` field to the login prompt model, we allow admins to set quiet periods per loginPrompt. It is optional -- could change it to be required if needed.
+
+    We could discuss the edge case where a user has all their login prompts in the quiet period. For now, we will return `NotFound` error.
+
+    Given the current repository structure, it was a large code change to create a service layer that was able to leverage the Slick Tables in order to create a single DB transaction. A straightforward alternative is to decouple the table schema from the repositories. I've chose to stick to an in-memory solution.
+
 Further Improvements:
 
-- Make sure `quietPeriod` is not shared with user.
+- If we desired to keep `quietPeriod` internal:
     - Create a new model that only shares desired fields.
 
+- Decouple the table schema from the repositories.
+    - Make Slick Tables public, and allow complex query creation from the service layer.
+    - Create a single DB transaction to handle multiple operations.
+    - Use Transactional operations to allow ROLLBACK on error.
+
+- Add tests
+    - Introduce a mock dependency.

@@ -13,10 +13,11 @@ target
 .metals/
 .bsp/
 .bloop/
+project/metals.sbt
 
 # Added for sbt
 project/target/
-project/project/target/
+project/project/*
 
 # Added to reduce noise
 db/
