@@ -25,7 +25,7 @@ class AdminController @Inject() (
     mapping(
       "caption" -> nonEmptyText,
       "imageUrl" -> nonEmptyText,
-      "quietPeriodSec" -> optional(number)
+      "quietPeriodSec" -> optional(number.verifying("Must be positive", quietPeriod => quietPeriod > 0))
     )(LoginPromptData.apply)(LoginPromptData.unapply)
   )
 
