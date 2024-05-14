@@ -42,21 +42,7 @@ To get you started, we've initialized the database with some sample login prompt
 
 IMPORTANT: Please add `-Duser.timezone=UTC` to your sbt command line! Otherwise, timezone issues may arise between H2 and the server.
 
-### Design Decisions:
-
-First Feature:
-
-    We could keep simple randomizing logic of the login prompt within the database (using `rand()`).
-
-    We could discuss whether or not the `NotFound` error should be returned when there are no login prompts.
-
-Second Feature:
-
-    By adding a `quietPeriod` field to the login prompt model, we allow admins to set quiet periods per loginPrompt. It is optional -- could change it to be required if needed.
-
-    We could discuss the edge case where a user has all their login prompts in the quiet period. For now, we will return `NotFound` error.
-
-    Given the current repository structure, it was a large code change to create a service layer that was able to leverage the Slick Tables in order to create a single DB transaction. A straightforward alternative is to decouple the table schema from the repositories. I've chose to stick to an in-memory solution.
+Please read notes on the PR's on GitHub.
 
 Further Improvements:
 
