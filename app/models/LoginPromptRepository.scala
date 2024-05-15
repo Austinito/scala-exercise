@@ -25,7 +25,9 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
 
     def imageUrl =column[String]("IMAGE_URL")
 
-    def * = (id, caption, imageUrl) <> ((LoginPrompt.apply _).tupled, LoginPrompt.unapply)
+    def quietPeriodSec = column[Option[Int]]("QUIET_PERIOD_SEC")
+
+    def * = (id, caption, imageUrl, quietPeriodSec) <> ((LoginPrompt.apply _).tupled, LoginPrompt.unapply)
   }
 
   private val loginPrompts = TableQuery[LoginPromptTable]
@@ -33,11 +35,11 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
   /**
    * Creates a new login prompt with the given properties.
    */
-  def create(caption: String, imageUrl: String): Future[LoginPrompt] = db.run {
-    (loginPrompts.map(lp => (lp.caption, lp.imageUrl))
+  def create(caption: String, imageUrl: String, quietPeriodInSeconds: Option[Int] = None): Future[LoginPrompt] = db.run {
+    (loginPrompts.map(lp => (lp.caption, lp.imageUrl, lp.quietPeriodSec))
       returning loginPrompts.map(_.id)
-      into ((values, id) => LoginPrompt(id, values._1, values._2))
-      ) += (caption, imageUrl)
+      into ((values, id) => LoginPrompt(id, values._1, values._2, values._3))
+      ) += (caption, imageUrl, quietPeriodInSeconds)
   }
 
   /**
@@ -55,13 +57,26 @@ class LoginPromptRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(
   }
 
   /**
+   * Fetches a random `LoginPrompt`
+   *
+   * Note: uses SQL `rand()` function, reducing memory usage and enhancing performance.
+   */
+  def getRandom(): Future[Option[LoginPrompt]] = db.run {
+    loginPrompts
+      .sortBy(_ => SimpleFunction.nullary[Double]("rand"))
+      .take(1)
+      .result
+      .headOption
+  }
+
+  /**
    * Updates the login prompt by id.
    */
   def update(loginPrompt: LoginPrompt): Future[Boolean] = db.run {
     loginPrompts
       .filter(_.id === loginPrompt.id)
-      .map(lp => (lp.caption, lp.imageUrl))
-      .update(loginPrompt.caption, loginPrompt.imageUrl)
+      .map(lp => (lp.caption, lp.imageUrl, lp.quietPeriodSec))
+      .update(loginPrompt.caption, loginPrompt.imageUrl, loginPrompt.quietPeriodSec)
   }.map(_ == 1)
 
   /**

@@ -24,7 +24,8 @@ class AdminController @Inject() (
   val loginPromptForm = Form(
     mapping(
       "caption" -> nonEmptyText,
-      "imageUrl" -> nonEmptyText
+      "imageUrl" -> nonEmptyText,
+      "quietPeriodSec" -> optional(number.verifying("Must be positive", quietPeriod => quietPeriod > 0))
     )(LoginPromptData.apply)(LoginPromptData.unapply)
   )
 
@@ -54,7 +55,7 @@ class AdminController @Inject() (
       },
       data =>
         repo
-          .create(data.caption, data.imageUrl)
+          .create(data.caption, data.imageUrl, data.quietPeriodSec)
           .map(_ =>Redirect(routes.AdminController.index()))
     )
   }
@@ -67,7 +68,8 @@ class AdminController @Inject() (
       case Some(loginPrompt) =>
         val data = LoginPromptData(
           caption = loginPrompt.caption,
-          imageUrl = loginPrompt.imageUrl
+          imageUrl = loginPrompt.imageUrl,
+          quietPeriodSec = loginPrompt.quietPeriodSec
         )
         val form = loginPromptForm.fill(data)
         Ok(views.html.form(Some(id), form))
@@ -86,7 +88,7 @@ class AdminController @Inject() (
       },
       data =>
         repo
-          .update(LoginPrompt(id, caption = data.caption, imageUrl = data.imageUrl))
+          .update(LoginPrompt(id, caption = data.caption, imageUrl = data.imageUrl, quietPeriodSec = data.quietPeriodSec))
           .map( _ => Redirect(routes.AdminController.index()))
     )
   }
@@ -104,5 +106,6 @@ class AdminController @Inject() (
 
 case class LoginPromptData(
                             caption: String,
-                            imageUrl: String
+                            imageUrl: String,
+                            quietPeriodSec: Option[Int]
                           )

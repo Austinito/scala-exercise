@@ -1,11 +1,13 @@
 package controllers
 
+import java.util.logging.Logger
 import scala.concurrent.ExecutionContext
 
 import javax.inject.{Inject, Singleton}
 import models.LoginPromptRepository
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
+import services.LoginPromptService
 
 /**
  * This controller handles the JSON API used by client applications to display login prompts.
@@ -13,8 +15,11 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 @Singleton
 class ApiController @Inject()(
                                repo: LoginPromptRepository,
+                               service: LoginPromptService,
                                val cc: ControllerComponents
                              )(implicit ec: ExecutionContext) extends AbstractController(cc) {
+
+  private val logger = Logger.getLogger(this.getClass.getSimpleName)
 
   /**
    * Returns the list of existing login prompts.
@@ -42,8 +47,14 @@ class ApiController @Inject()(
    * Returns a random login prompt.
    * @return A login prompt, in JSON format.
    */
-  def getRandomLoginPrompt() = Action {
-    NotImplemented
+  def getRandomLoginPrompt() = Action.async {
+    repo.getRandom().map {
+      case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
+      case None => NotFound
+      }.recover { case e =>
+        logger.severe("Failed to return a random login prompt: " + e.getMessage())
+        InternalServerError
+      }
   }
 
   /**
@@ -51,7 +62,13 @@ class ApiController @Inject()(
    * @param userId The unique user id.
    * @return A login prompt, in JSON format.
    */
-  def getRandomLoginPromptForUser(userId: Long) = Action {
-    NotImplemented
+ def getRandomLoginPromptForUser(userId: Long) = Action.async {
+   service.getEligiblePromptForUser(userId).map {
+     case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
+     case None => NotFound
+     }.recover { case e =>
+       logger.severe(s"Failed to return a random login prompt for user '$userId': " + e.getMessage())
+       InternalServerError
+     }
   }
 }
