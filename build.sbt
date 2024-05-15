@@ -20,6 +20,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick-evolutions" % "5.1.0"
 )
 
+libraryDependencies ++= Seq(
+  "org.mockito" % "mockito-core" % "3.12.4" % Test,
+)
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.austinito.controllers._"

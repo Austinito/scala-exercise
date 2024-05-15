@@ -47,7 +47,7 @@ class ApiController @Inject()(
     repo.getRandom().map {
       case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
       case None => NotFound
-    }
+    }.recover { case _ => InternalServerError }
   }
 
   /**
@@ -59,6 +59,6 @@ class ApiController @Inject()(
     service.getEligiblePromptForUser(userId).map {
       case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
       case None => NotFound
-    }
+    }.recover { case _ => InternalServerError }
   }
 }
