@@ -38,7 +38,7 @@ class LoginPromptService @Inject()(
     } yield maybeSelected
   }
 
-  def updateLastShown(userId: Long, promptId: Long, quietPeriod: Option[Int]): Future[Unit] = {
+  private def updateLastShown(userId: Long, promptId: Long, quietPeriod: Option[Int]): Future[Unit] = {
     quietPeriod.fold(Future.unit) { quietPeriod =>
       val quietUntil = Instant.now().plusSeconds(quietPeriod)
       val upv = UserPromptView(userId, promptId, quietUntil)

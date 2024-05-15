@@ -1,5 +1,6 @@
 package controllers
 
+import java.util.logging.Logger
 import scala.concurrent.ExecutionContext
 
 import javax.inject.{Inject, Singleton}
@@ -17,6 +18,9 @@ class ApiController @Inject()(
                                service: LoginPromptService,
                                val cc: ControllerComponents
                              )(implicit ec: ExecutionContext) extends AbstractController(cc) {
+
+  private val logger = Logger.getLogger(this.getClass.getSimpleName)
+
   /**
    * Returns the list of existing login prompts.
    * @return A list of login prompts, in JSON format.
@@ -47,7 +51,10 @@ class ApiController @Inject()(
     repo.getRandom().map {
       case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
       case None => NotFound
-    }.recover { case _ => InternalServerError }
+      }.recover { case e =>
+        logger.severe("Failed to return a random login prompt: " + e.getMessage())
+        InternalServerError
+      }
   }
 
   /**
@@ -56,9 +63,12 @@ class ApiController @Inject()(
    * @return A login prompt, in JSON format.
    */
  def getRandomLoginPromptForUser(userId: Long) = Action.async {
-    service.getEligiblePromptForUser(userId).map {
-      case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
-      case None => NotFound
-    }.recover { case _ => InternalServerError }
+   service.getEligiblePromptForUser(userId).map {
+     case Some(loginPrompt) => Ok(Json.toJson(loginPrompt))
+     case None => NotFound
+     }.recover { case e =>
+       logger.severe(s"Failed to return a random login prompt for user '$userId': " + e.getMessage())
+       InternalServerError
+     }
   }
 }
